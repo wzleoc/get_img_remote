@@ -1,0 +1,45 @@
+<?php
+header("content-type:text/html;charset=utf8");
+//方法一:
+	function load_img_file_get_content($file_url,$save_to){
+		$content=file_get_contents($file_url);
+		file_put_contents($save_to,$content);
+
+	}
+//方法二
+	function load_img_fopen($file_url,$save_to){
+		$in=fopen($file_url,"rb");
+		$out=fopen($save_to,"wb");
+
+		while($chunk=fread($in,8972)){
+			fwrite($out,$chunk);
+
+		}
+		fclose($in);
+		fclose($out);
+
+	}
+
+//方法三
+
+	function load_img_curl($file_url,$save_to){
+		$ch=curl_init();
+		//设置请求方式
+		curl_setopt($ch,CURLOPT_POST,0);
+		curl_setopt($ch,CURLOPT_URL,$file_url);
+		// 将curl_exec()获取的信息以文件流的形式返回，而不是直接输出。
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+		//content为字符串
+		$content=curl_exec($ch);
+		// var_dump($content);die;
+		curl_close($ch);
+
+		//$download_file_resouse是一个资源
+		$download_file_resouse=fopen($save_to,'wb');
+		fwrite($download_file_resouse,$content);
+		fclose($download_file_resouse);
+	}
+
+$file_url="http://img3.duitang.com/uploads/item/201608/06/20160806132402_Vd3jQ.thumb.700_0.jpeg";
+$save_to="./img/".time().".jpg";
+load_img_curl($file_url,$save_to);
